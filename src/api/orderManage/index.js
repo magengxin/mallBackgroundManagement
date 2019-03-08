@@ -24,10 +24,19 @@ export function confirmDelivery (data) {
   })
 }
 
-//导出
+// 导出
 export function exportExcel(data) {
   return request({
     url: '/backend/order/exportExcel',
+    method: 'post',
+    data
+  })
+}
+
+// 导入
+export function importExcel(data) {
+  return request({
+    url: '/backend/importDelivery/upload',
     method: 'post',
     data
   })

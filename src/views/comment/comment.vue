@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
       <div class="search-form">
-        <el-form :inline="true" :model="commentRequest" class="demo-form-inline">
+        <el-form :inline="true" :model="commentRequest" class="demo-form-inline page-form">
           <el-form-item>
             <el-form-item style="margin-left: 20px">
               <el-input clearable v-model="commentRequest.nick_name" placeholder="昵称"/>
@@ -28,12 +28,11 @@
               style="margin-left: 20px"
             />
             <el-form-item>
-              <el-button type="primary" style="margin-left: 20px" @click="searchCommentList">查询</el-button>
+              <el-button type="primary" @click="searchCommentList">查询</el-button>
             </el-form-item>
           </el-form-item>
         </el-form>
       </div>
-
 
       <div class="list">
         <el-table ref="multipleTable" :data="commentListMsg" tooltip-effect="dark" border style="width: 100%">
@@ -279,5 +278,26 @@
   font-size: 16px;
   font-weight: bold;
   color: #000;
+}
+
+.page-form >.el-form-item> .el-form-item__content{
+  display: flex;
+}
+.page-form >.el-form-item> .el-form-item__content > div{
+  flex:1;
+  margin-top: 20px;
+  margin-right: 20px;
+}
+.el-form--inline .el-form-item{
+  /*margin-right: 0!important;*/
+  margin-left: 0!important;
+}
+.el-date-editor.el-input, .el-date-editor.el-input__inner{
+  width: 200px;
+  margin-right: 20px!important;
+  margin-left: 0!important;
+}
+.app-container{
+  padding-top: 0;
 }
 </style>

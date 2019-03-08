@@ -1,63 +1,64 @@
 <template>
   <div class="advertising-message">
-    <div>
-      <el-form :inline="true"  class="demo-form-inline">
-        <el-form-item>
-          <el-input  placeholder="商品名称" v-model="adverCommodityName"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-select placeholder="上架状态" v-model="adverCommodityStatus">
-            <el-option label="上架" value="0"></el-option>
-            <el-option label="下架" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="searchListAdver">查询</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <!--<div>-->
+      <!--<el-form :inline="true"  class="demo-form-inline">-->
+        <!--<el-form-item>-->
+          <!--<el-input  placeholder="商品名称" v-model="adverCommodityName"></el-input>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item>-->
+          <!--<el-select placeholder="上架状态" v-model="adverCommodityStatus">-->
+            <!--<el-option label="上架" value="0"></el-option>-->
+            <!--<el-option label="下架" value="1"></el-option>-->
+          <!--</el-select>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item>-->
+          <!--<el-button type="primary" @click="searchListAdver">查询</el-button>-->
+        <!--</el-form-item>-->
+      <!--</el-form>-->
+    <!--</div>-->
     <!--列表-->
       <div class="list-advertising">
         <el-button class="add-btn" type="primary" style="margin-bottom: 30px" @click="addAdvertisementBtn">添加</el-button>
         <el-table  ref="multipleTable" :data="advertisementAwarry" tooltip-effect="dark" border style="width: 100%" >
-          <el-table-column prop="aid" label="id" align="center" width="400px">
+          <el-table-column prop="aid" label="id" align="center" width="100px">
             <!--<template slot-scope="scope"></template>-->
           </el-table-column>
-          <el-table-column prop="name" align="center" label="广告名称" width="400px">
+          <el-table-column prop="name" align="center" label="商品名称" width="">
           </el-table-column>
-          <el-table-column align="center" label="操作" show-overflow-tooltip>
+          <el-table-column align="center" label="操作" show-overflow-tooltip width="300px">
             <template slot-scope="scope">
-              <el-button type="success" @click="goodsShow(scope)">设置显示商品</el-button>
-              <el-button type="warning" @click="setUpaPrizePool(scope)">设置奖池</el-button>
-              <el-button  type="primary" v-if="scope.row.status == 0" @click="upperAndlower(scope)">上架</el-button>
-              <el-button  type="primary" v-if="scope.row.status == 1" @click="upperAndlower(scope)">下架</el-button>
+              <!--<el-button type="success" @click="goodsShow(scope)">设置显示商品</el-button>-->
+              <el-button  type="primary" v-if="scope.row.status == 1" @click="upperAndlower(scope)">上架</el-button>
+              <!--<el-button  type="primary" v-if="scope.row.status == 1" @click="upperAndlower(scope)">下架</el-button>-->
+              <el-button type="warning" @click="editor(scope)">编辑</el-button>
               <el-button  type="danger" @click="deletListeBtn(scope)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
 
-
-    <!--添加广告-->
+    <!--添加-->
     <div>
-      <el-dialog  :title="addAdvertisementTitle" :visible.sync="addAdvertisementHide" placement="" style="padding: 0;" width="600px">
+      <el-dialog  :title="addTitle" :visible.sync="addAdvertisementHide" placement="" style="padding: 0;" width="600px" class="dialog-padding" center>
         <el-form style="width: 300px"  class="demo-form-inline">
-          <el-form-item label="ID">
-            <el-input  placeholder="输入ID" v-model="objAddAdvertisemen.id" ></el-input>
+          <el-form-item label="选择商品" class="flex">
+            <el-input  placeholder="请输入商品名称" v-model="objAddAdvertisemen.id" ></el-input>
           </el-form-item>
-          <el-form-item label="广告名称">
-            <el-input  placeholder="输入广告名称" v-model="objAddAdvertisemen.name"></el-input>
+          <el-form-item label=" " class="flex">
+            <el-input  placeholder="" v-model="objAddAdvertisemen.name"></el-input>
+          </el-form-item>
+          <el-form-item label="专享价" class="flex">
+            <el-input  placeholder="9.9" v-model="objAddAdvertisemen.name"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button style="margin-top: 20px;margin-right: 20px" type="info" @click="addAdvertisementHide = false" >取消</el-button>
-            <el-button style="margin-top: 20px" type="primary" @click="inputAddAdvertisement">添加</el-button>
+            <!--<el-button style="margin-top: 20px;margin-right: 20px" type="info" @click="addAdvertisementHide = false" >取消</el-button>-->
+            <el-button style="margin-top: 20px" type="primary" @click="inputAddAdvertisement">确定</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
     </div>
 
-
-    <!--//删除页弹出框-->
+    <!-- 删除页弹出框 -->
     <div class="delete-sure">
       <el-dialog  :title="adverdeleteTitle" :visible.sync="deleteShow" placement="" style="padding: 0;" width="500px">
         <div class="text-delete">
@@ -81,9 +82,7 @@
       </el-dialog>
     </div>
 
-
-
-    <!--// 设置奖池/设置显示商品-->
+    <!-- 编辑 -->
     <div class="delete-sure">
       <el-dialog  :title="jackpotTitle" :visible.sync="jackpotShow" placement="" style="padding: 0;" width="800px">
         <div class="text-delete">
@@ -101,8 +100,8 @@
             <el-table-column align="center" label="操作" show-overflow-tooltip>
               <template slot-scope="scope">
                 <el-button size="mini" type="warning" @click="jackpotSet(scope)">编辑</el-button>
-                <el-button size="mini" v-if="scope.row.status == 0" type="primary" @click="jackpotUpper(scope)">上架</el-button>
-                <el-button size="mini" v-if="scope.row.status == 1" type="primary" @click="jackpotUpper(scope)">下架</el-button>
+                <el-button size="mini" v-if="scope.row.status == 1" type="primary" @click="jackpotUpper(scope)">上架</el-button>
+                <!--<el-button size="mini" v-if="scope.row.status == 1" type="primary" @click="jackpotUpper(scope)">下架</el-button>-->
                 <el-button size="mini" type="danger" @click="jackpotdeletBtn(scope)">删除</el-button>
               </template>
             </el-table-column>
@@ -212,7 +211,6 @@
       </el-dialog>
     </div>
 
-
     <!--设置奖池-添加弹框-->
     <div>
       <el-dialog  :title="addJackpotTitle" :visible.sync="addJackpotShow" placement="" style="padding: 0;" width="800px">
@@ -242,8 +240,6 @@
         </div>
       </el-dialog>
     </div>
-
-
 
     <!--分页-->
     <div class="block" style="margin-top: 30px;">
@@ -307,7 +303,7 @@
             page:'',//设置显示商品=>商品列表当前页数
             goodsListReturn:[],//商品列表
             setShowListMsg:[],//设置显示商品列表
-            addAdvertisementTitle:'',//广告弹框Title
+            addTitle:'',//添加弹框Title
             addAdvertisementHide:false,//广告弹框显示隐藏
             advertisementListPage:{},//广告列表分页
             allAdvertisementPageNum:null,//广告列表分页总数
@@ -359,6 +355,7 @@
           }
           advertisementList(sendSearchList).then(res =>{
             if (res.data.code == 0){
+              console.log(res);
               this.advertisementAwarry = res.data.result.list;
               this.advertisementListPage = res.data.result.paginate
               this.allAdvertisementPageNum = this.advertisementListPage.record_count/1
@@ -381,6 +378,8 @@
             page:this.listPage
           }
           advertisementList(sendSearchList).then(res =>{
+            console.log(res);
+
             if (res.data.code == 0){
               this.advertisementAwarry = res.data.result.list;
               this.advertisementListPage = res.data.result.paginate
@@ -397,7 +396,7 @@
         //添加广告
         addAdvertisementBtn(){
           this.addAdvertisementHide = true
-          this.addAdvertisementTitle = '添加广告'
+          this.addTitle = '添加'
         },
         //添加广告确认按钮
         inputAddAdvertisement(){
@@ -420,6 +419,8 @@
 
         //删除广告
         deletListeBtn(row,scope){
+          console.log(scope);
+          console.log(row);
           this.deleteShow = true
           this.sendDeleteId = row.row.aid;
           this.popHideandShow='确认删除？'
@@ -489,20 +490,22 @@
 
         //上架
         upperAndlower(row,scope){
+          console.log('row',row);
+          console.log('scope',scope);
           this.deleteShow = true
           this.sendDeleteId = row.row.aid;
           this.statusUperlower = row.row.status;
           if (row.row.status == 1){
-            this.popHideandShow='广告确认下架？';
-            this.adverdeleteTitle='广告下架'
-          } else{
             this.popHideandShow='广告确认上架？';
             this.adverdeleteTitle='广告上架'
+          } else{
+            this.popHideandShow='广告确认下架？';
+            this.adverdeleteTitle='广告下架'
           }
         },
 
 
-        //设置显示商品
+        // 设置显示商品
         goodsShow(row,scope){
           console.log(row);
           this.jackpotShow = true
@@ -513,7 +516,7 @@
           })
         },
 
-        //设置显示商品=>添加=>查询列表
+        // 设置显示商品=>添加=>查询列表
         goodsListAddShow(){
           let sendSearchShop = {
             goods_name :this.inputGoddsName,
@@ -526,6 +529,7 @@
             console.log(this.goodListPage);
           })
         },
+
         // 勾选checkbox
         selectCheckBox(selection,row){
           console.log(selection);
@@ -581,8 +585,8 @@
           })
         },
 
-        //设置奖池
-        setUpaPrizePool(row,scope){
+        //编辑
+        editor(row,scope){
           this.jackpotShow = true;
           this.jackpotTitle = '设置奖池'
           this.sendDeleteId = row.row.aid;
@@ -629,15 +633,13 @@
           })
         },
 
-
-
         //奖池上架
         jackpotUpper(row,scope){
           console.log(row);
           this.deleteShow = true;
           this.variableJackpotID = row.row.ap_id
           this.variableJackpotUpper = row.row.status
-          if (this.variableJackpotUpper == 1){
+          if (this.variableJackpotUpper == 0){
             this.popHideandShow='奖池确认下架？';
             this.adverdeleteTitle='奖池下架'
           } else{
@@ -719,15 +721,13 @@
     }
 </script>
 
-
-
 <style  lang="scss" scoped>
   @import "../../styles/common.scss";
 .advertising-message{
   padding: 20px;
 }
   .list-advertising{
-    margin-top: 20px;
+    /*margin-top: 20px;*/
   }
   .list-advertising .add-btn{
     float: right;
@@ -746,5 +746,13 @@
     margin:50px auto 0;
     padding-bottom: 30px;
   }
-
+  /*.dialog-padding .el-dialog__body{*/
+    /*padding-left: 100px!important;*/
+  /*}*/
+  .flex{
+    display: flex;
+  }
+  .el-form-item__label{
+    width: 68px;
+  }
 </style>

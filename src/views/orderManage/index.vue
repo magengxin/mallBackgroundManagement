@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="search-form">
-      <el-form :inline="true" :model="formData" class="demo-form-inline">
+      <el-form :inline="true" :model="formData" class="demo-form-inline page-form">
         <el-form-item>
           <el-select v-model="formData.type" clearable placeholder="兑换类型">
             <el-option label="实物" value="1"/>
@@ -12,7 +12,7 @@
             <el-input clearable v-model="formData.local_order_no" placeholder="订单号"/>
           </el-form-item>
           <el-form-item style="margin-left: 20px">
-            <el-input clearable v-model="formData.nick" placeholder="昵称"/>
+            <el-input clearable v-model="formData.nick_name" placeholder="昵称"/>
           </el-form-item>
           <el-form-item style="margin-left: 20px">
             <el-input clearable v-model="formData.recipient" placeholder="收货人"/>
@@ -30,27 +30,29 @@
               <el-option label="已评价" value="8"/>
             </el-select>
           </el-form-item>
-          <el-form-item style="margin-top: 20px">
           <el-date-picker
             clearable
             v-model="start_time"
             type="date"
             placeholder="选择日期"
-          /></el-form-item>
-          <el-form-item style="margin-top: 20px">
+            style="margin-left: 20px"
+          />
           <el-date-picker
             clearable
             v-model="end_time"
             type="date"
             placeholder="选择日期"
-          /></el-form-item>
-          <el-form-item style="margin-top: 20px">
+            style="margin-left: 20px"
+          />
+          <el-form-item>
             <el-input clearable v-model="formData.goods_name" placeholder="商品名称"/>
           </el-form-item>
         </el-form-item>
+        <input ref="excel-upload-input" class="excel-upload-input" type="file" accept=".xlsx, .xls" @change="handleUpload">
         <el-form-item style="margin-left: 20px;float: right ">
           <el-button type="primary" @click="onSearch">查询</el-button>
-          <el-button type="primary" @click="downExcel">导出</el-button>
+          <el-button type="primary" @click="downExcel">导出订单信息</el-button>
+          <el-button type="primary" @click="upExcel">导入物流信息</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -104,6 +106,13 @@
           prop="actual_amount"
           align="center"
           label="实付"
+          width="120"
+          show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column
+          prop="actual_amount"
+          align="center"
+          label="买家留言"
           width="120"
           show-overflow-tooltip
         ></el-table-column>
@@ -244,7 +253,7 @@
   </div>
 </template>
 <script>
-import { orderList, orderDetail ,confirmDelivery,exportExcel} from "@/api/orderManage/index";
+import { orderList, orderDetail ,confirmDelivery,exportExcel,importExcel} from "@/api/orderManage/index";
 export default {
   data() {
     return {
@@ -261,6 +270,7 @@ export default {
       start_time: "",
       end_time: "",
       orderList: [],
+      // TODO: 买家留言开放接口进行展示
       total: 0,
       consignee: false, // 是否显示收货人信息 实物显示 优惠券不显示
       consigneeInfo: { // 收货人信息
@@ -277,7 +287,7 @@ export default {
         status: "", //商品类型
         local_order_no: "", //订单号
         recipient: "", //收件人
-        nick: "", //昵称
+        nick_name: "", //昵称
         start_order_create_time: "", //开始时间
         end_order_create_time: "", //结束时间
         page: 1,
@@ -312,12 +322,39 @@ export default {
         })
       )
     },
+    upExcel(){
+      this.$refs['excel-upload-input'].click()
+    },
+    handleUpload(e) {
+      const files = e.target.files
+      const rawFile = files[0] // only use files[0]
+      if (!rawFile) return
+
+      var fd = new FormData()
+      fd.append('execl',rawFile)
+      let config = {
+        headers:{
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+
+      importExcel(fd,config).then(res=>{
+        if(res.data.code!=0){
+          this.$message.error(res.data.code);
+        }else if (res.data.code==0) {
+          this.$message({
+            message: '导入成功',
+            type: 'success'
+          });
+        }
+      })
+    },
     downExcel(){
       let sendExportExcel = {
         type:this.formData.type,//商品类型
         local_order_no:this.formData.local_order_no,//订单号
         recipient:this.formData.recipient,//收件人
-        nick: this.formData.nick,//昵称
+        nick_name: this.formData.nick_name,//昵称
         start_order_create_time:this.start_time,
         end_order_create_time: this.end_time,
         order_status : this.formData.order_status,//订单状态
@@ -358,6 +395,10 @@ export default {
         let [name,fileType] = ['测试导出','xlsx']
         excel.export_json_to_excel(theader,data,'订单','xlsx')
       })
+        this.$message({
+          type: 'success',
+          message: '导出成功'
+        })
       })
       //   let tdata= [{'name': "1",'age':"2"},{'name': 45,'age': '99'}]
       //   // let t1 = tdata[0]
@@ -537,6 +578,31 @@ export default {
 }
 .sureand-close {
   margin-top: 30px;
+}
+
+.excel-upload-input{
+  display: none;
+  z-index: -9999;
+}
+.page-form >.el-form-item> .el-form-item__content{
+  display: flex;
+}
+.page-form >.el-form-item> .el-form-item__content > div{
+  flex:1;
+  margin-top: 20px;
+  margin-right: 20px;
+}
+.el-form--inline .el-form-item{
+  /*margin-right: 0!important;*/
+  margin-left: 0!important;
+}
+.el-date-editor.el-input, .el-date-editor.el-input__inner{
+  width: 200px;
+  margin-right: 20px!important;
+  margin-left: 0!important;
+}
+.app-container{
+  padding-top: 0;
 }
 </style>
 

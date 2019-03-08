@@ -22,7 +22,7 @@ import Layout from '../views/layout/Layout'
   }
 **/
 export const constantRouterMap = [
-  { path: '/login', component: () => import('@/views/login/index')},
+  { path: '/login', component: () => import('@/views/login/index'), hidden: true },
   { path: '/404', component: () => import('@/views/404'), hidden: true },
 
   {
@@ -213,6 +213,20 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    // 新人专区设置
+    path: '/NewbornSetup',
+    meta: { title: 'NewbornSetup', icon: 'link' },
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'list',
+        component: () => import('@/views/NewbornSetup/index'),
+        meta: {title: '新人专区设置'}
+      }
+    ]
+  },
 
   // {
   //   path: '/form',
@@ -291,7 +305,6 @@ export const constantRouterMap = [
   //   children: [
   //     {
   //       path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-  //       meta: { title: 'External Link', icon: 'link' }
   //       meta: { title: 'External Link', icon: 'link' }
   //     }
   //   ]

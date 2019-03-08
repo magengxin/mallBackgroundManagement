@@ -7,8 +7,18 @@
       </el-form-item>
         <el-form-item >
           <el-select clearable v-model="formData.status" placeholder="上架状态">
-            <el-option label="上架" value="1"/>
-            <el-option label="下架" value="0"/>
+            <el-option label="上架" value="0"/>
+            <el-option label="下架" value="1"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item >
+          <el-select clearable v-model="formData.classify_status" placeholder="分类列表">
+            <el-option label="美容个护" value="0"/>
+            <el-option label="生活家居" value="1"/>
+            <el-option label="数码3c" value="2"/>
+            <el-option label="养生豪礼" value="3"/>
+            <el-option label="运动健身" value="4"/>
+            <el-option label="珠宝首饰" value="5"/>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -88,14 +98,14 @@ export default {
     return {
       deleteShow: false, //删除弹框
       resultList:[],//搜索列表
-      indexList:'',//列表下表
+      indexList:'',//列表索引
       removeListId:'',//删除列表传参
       dialogVisible:false,//删除失败弹框
       msgDialogVisible:'',//删除失败弹框内容
       shopCheap:'',//商品上架下架状态
       upperAndlowerVariable:'',//上下架文字
       deleteTitle: '删    除',
-      clickUpperGid:'',//确认上下架弹框row.row.gid
+      clickUpperGid:'',//确认上下架弹框 row.row.gid
       clickUpperChange:'',
       current_page:1,
       record_count:10,
@@ -107,6 +117,7 @@ export default {
       formData: {
         goods_name: '',
         status: '',
+        classify_status:'', // 默认为100 即全部显示，以后按序号展示
         page:'1'
       },
     }
@@ -115,10 +126,11 @@ export default {
     this.onSearch()
   },
   methods: {
+    // 编辑 goto : 2
     addGoods() {
       this.$router.push({ path: '/goodsManage/addGoods',query:{goto:2} })
    },
-    //编辑
+    // 编辑 goto : 1
     editSuccess(id){
       this.$router.push({ path: '/goodsManage/addGoods',query:{goto:1,id:id}})
     },
@@ -135,8 +147,8 @@ export default {
       })
     },
 
-
     //上下架点击事件
+    // TODO: 上下架状态 0:上架 1:下架
     upperAndlowerClick(row,scope){
       this.clickUpperChange = row.row.status
       this.clickUpperGid = row.row.gid
@@ -150,15 +162,13 @@ export default {
     //弹框确认按钮
     frameConfirmation(){
       this.dialogVisible = false
-      if (this.clickUpperChange == 0){
-        this.clickUpperChange = 1
-      }else{
-        this.clickUpperChange = 0;
-      }
+      console.log(this.clickUpperChange);
+      this.clickUpperChange == 0 ? this.clickUpperChange = 1 : this.clickUpperChange = 0;
       let sendGoodsUpper = {
         status : this.clickUpperChange,
         goods_id : this.clickUpperGid
       }
+      // TODO: 这里为啥是先改变上下架状态后发送请求，回来后再翻转，这样不会冲突么？
       console.log(sendGoodsUpper);
       goodsUpper(sendGoodsUpper).then(res =>{
         if (res.data.code == 0){
@@ -180,15 +190,14 @@ export default {
       this.formData.page = 1
       searchShop(this.formData).then(res=>{
         if (res.data.code == '0'){
-          console.log(res);
+          console.log('search res',res);
           this.resultList = res.data.result.list;
           this.record_count = res.data.result.paginate.record_count;
+          // TODO: 不明白什么意思
+          // TODO: 商品管理增加专享设置
         }
       })
     },
-
-
-
 
     handleSelectionChange() {},
     //删除弹框
@@ -215,8 +224,6 @@ export default {
         this.deleteShow = false;
       });
     },
-
-
   }
 }
 </script>

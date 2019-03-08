@@ -24,6 +24,17 @@
           <svg-icon icon-class="eye" />
         </span>
       </el-form-item>
+      <el-form-item prop="remember" class="form-remember">
+        <el-checkbox
+          label="七天内免登录"
+          type="checkbox"
+          checked
+          name="remember"
+          auto-complete="on"
+          clearable
+          placeholder=""
+          @change="handleRemember"/>
+      </el-form-item>
       <el-form-item style="margin-top: 60px; ">
         <el-button :loading="loading"  style="width:100%;background-image:url(../../../static/loginBtnBg.png);background-repeat:no-repeat;background-size:100% 100%;" @click.native.prevent="handleLogins">
           登 录
@@ -51,13 +62,13 @@
 
 <script>
 import { isvalidUsername } from '@/utils/validate'
-import { adminLogin } from '@/api/login/index'
+// import { adminLogin } from '@/api/login/index'
+// import { setToken } from '@/utils/auth'
 
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      console.log(value);
       if (isvalidUsername(value)) {
         callback(new Error('请输入正确的用户名'))
       } else {
@@ -80,7 +91,8 @@ export default {
       adverDialogVisible:'',
       loginForm: {
         username: '',
-        password: ''
+        password: '',
+        remember:1
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -107,17 +119,24 @@ export default {
         this.pwdType = 'password'
       }
     },
+    handleRemember(){
+      this.loginForm.remember===1?
+        this.loginForm.remember=0
+        :this.loginForm.remember=1
+    },
     handleLogins() {
-      let loginMsg ={
-        account:this.loginForm.username,
-        password:this.loginForm.password
-      }
-      adminLogin(loginMsg).then(res =>{
-        if (res.code == 0){
-            this.$router.push({ path: '/' })
-        } else{
-          this.dialogVisible = true
-          this.adverDialogVisible = res.data.msg
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          this.loading = true
+          this.$store.dispatch('Login', this.loginForm).then((res) => {
+            this.loading = false
+            this.$router.push({ path: this.redirect || '/' })
+          }).catch(() => {
+            this.loading = false
+          })
+        } else {
+          console.log('error submit!!')
+          return false
         }
       })
     }
@@ -217,6 +236,14 @@ $light_gray:#eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
+  }
+  .form-remember{
+    padding: 0 20px;
+    background: transparent;
+    border: none;
+  }
+  .el-checkbox__inner{
+    background: #000;
   }
 }
 </style>

@@ -8,8 +8,8 @@ import { getToken } from '@/utils/auth' // 验权
 // const whiteList = ['/login'] // 不重定向白名单
 router.beforeEach((to, from, next) => {
 //   // console.log(1);
-  let a = 1
-  if(a==1) {
+  let token = store.getters.token
+  if(token) {
     next()
   }else {
     if(to.path === '/login') {
